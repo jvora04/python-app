@@ -1,0 +1,60 @@
+version: '3.8'
+services: 
+      python:
+        build: 
+          context: .
+          dockerfile: Dockerfile
+        #image: python:latest
+        ports:
+         - '5000:5000'
+        environment:
+          #MYSQL_ROOT_PASSWORD: root
+          DB_USER: user
+          DB_PASSWORD: password
+          DB_HOST: mysql # name of the mysql service as set in the docker-compose file
+          #MYSQL_DATABASE: database
+          DB_PORT: 3306
+          DB_NAME: database
+          #auth_plugin: mysql_native_password
+        volumes:
+          - .:/app
+        # volumes:
+        #   - type: bind
+        #     source: .
+        #     target: /scripts
+        # command: tail -f /dev/null
+        links:
+          - 'mysql'
+        depends_on:
+          - mysql
+
+      mysql:
+        image: mysql:latest
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        # ports:
+        #  - '33061:3306'
+        environment:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+          MYSQL_HOST: mysql # name of the mysql service as set in the docker-compose file
+          MYSQL_DATABASE: database
+          #auth_plugin: mysql_native_password
+        # volumes:
+        #   - type: volume
+        #     source: App
+        #     target: /var/lib/mysql
+        volumes:
+            - db:/var/lib/mysql
+            #- ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  db: {}
+    #driver: local
+
+
+# volumes:
+#   target:
+#       #mysql-db1:
+#         #external: true
